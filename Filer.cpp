@@ -24,7 +24,7 @@ int getDurationFromFile(std::string path){
     return ret;
 }
 
-Playlist makePlaylistFromFile(std::string path){
+Playlist Filer::makePlaylistFromFile(std::string path){
     int l = 0, r = 0;
     for(int i = 0; i < path.size(); i++){
         if(path[i] == '/'){
@@ -41,20 +41,20 @@ Playlist makePlaylistFromFile(std::string path){
     if (in.is_open()){
         std::string line;
         getline(in, line);
-        auto pos = songs->find(line);
+        auto pos = songs->find((char*)line.c_str());
         Song temp("",0);
-        if(pos == map.end()){
+        if(pos == songs->end()){
             std::cout<<line<<"  don't exist in the collection\n";
         }else{
             temp = pos->second;
         }
-        pl = new Playlist(name.c_str(), temp);
+        pl = new Playlist((char *)name.c_str(), temp);
         while(getline(in, line)){
-            pos = songs->find(line);
-            if(pos == map.end()){
+            pos = songs->find((char*)line.c_str());
+            if(pos == songs->end()){
                 std::cout<<line<<" don't exist in the collection\n";
             }else{
-                pl.AddSong(pos->second);
+                pl->AddSong(pos->second);
             }
         }
     }
@@ -69,9 +69,7 @@ void Filer::readCollection(){
         if(entry.path().extension().string() != ".swf"){
             continue;
         }
-        char *sname;
-        strcpy(sname, filename.c_str());
-        songs->insert(std::pair<key_type, value_type>(sname, Song(sname, getDurationFromFile(entry.path()))));
+        songs->insert(std::pair<char *, Song>((char *)filename.c_str(), Song((char *)filename.c_str(), getDurationFromFile(entry.path().string()))));
     }
     path = "files/playlists";
     for(const auto & entry : std::filesystem::directory_iterator(path)){
@@ -79,20 +77,23 @@ void Filer::readCollection(){
         if(entry.path().extension().string() != ".pwf"){
             continue;
         }
-        Playlist temp = makePlaylistFromFile(entry.path());
-        playlists->insert(temp.getName(), temp);
+        Playlist temp = makePlaylistFromFile(entry.path().string());
+        playlists->insert(std::pair<char *, Playlist>((char *)temp.getName(), temp));
     }
 }
 
 void Filer::writePlaylist(Playlist *pl){
-    ofstream file ("files/playlists/"+pl.getName()+".pwf");
+    char res[255] = "files/playlists/";
+    strcat(res, pl->getName());
+    strcat(res, ".pwf");
+    std::ofstream file(res);
     if (!file){
-        std::cout<<"Can't make file "<<"files/playlists/"<<pl.getName()<<".pwf"<<" for reading\n";
+        std::cout<<"Can't make file "<<"files/playlists/"<<pl->getName()<<".pwf"<<" for reading\n";
     }
-    Song first = pl->getNow();
-    file<<first.getName()<<"\n";
+    char* first =(char *) pl->getNow().getName();
+    file<<pl->getNow().getName()<<"\n";
     pl->Next();
-    while(pl->getNow()!=first){
+    while(strcmp(pl->getNow().getName(),first)){
         file<<pl->getNow().getName()<<"\n";
     }
     file.close();
@@ -116,14 +117,18 @@ void delFile(char *path){
 }
 
 void Filer::delPlaylist(char *name){
-    delFile("files/playlists/"+name);
+    char res[255] = "files/playlists/";
+    strcat(res, name);
+    delFile(res);
 }
 
 void Filer::delSong(char *name){
-    delFile("files/songs/"+name);
+    char res[255] = "files/songs/";
+    strcat(res, name);
+    delFile(res);
 }
 
-Filer::Filer(std::map<char *, Song, compare> *_songs, std::map<char *, Playlist, compare>  *_playlists){
+Filer::Filer(std::map<char *, Song, compare_str> *_songs, std::map<char *, Playlist, compare_str>  *_playlists){
     songs = _songs;
     playlists = _playlists;
     char *work = "files";
