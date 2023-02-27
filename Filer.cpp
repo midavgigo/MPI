@@ -84,7 +84,44 @@ void Filer::readCollection(){
     }
 }
 
+void Filer::writePlaylist(Playlist *pl){
+    ofstream file ("files/playlists/"+pl.getName()+".pwf");
+    if (!file){
+        std::cout<<"Can't make file "<<"files/playlists/"<<pl.getName()<<".pwf"<<" for reading\n";
+    }
+    Song first = pl->getNow();
+    file<<first.getName()<<"\n";
+    pl->Next();
+    while(pl->getNow()!=first){
+        file<<pl->getNow().getName()<<"\n";
+    }
+    file.close();
+}
 
+void Filer::copySongFrom(std::string path){
+    for(const auto & entry : std::filesystem::directory_iterator(path)){
+        if(entry.path().extension().string() != ".swf"){
+            continue;
+        }
+        std::filesystem::copy(entry.path(), "files/songs/");
+    }
+}
+
+void delFile(char *path){
+    if( remove(path) == -1 ){
+        std::cout<<"Could not delete "<<path<<"\n";
+    }else{
+        std::cout<<"Deleted "<<path<<"\n";
+    }
+}
+
+void Filer::delPlaylist(char *name){
+    delFile("files/playlists/"+name);
+}
+
+void Filer::delSong(char *name){
+    delFile("files/songs/"+name);
+}
 
 Filer::Filer(std::map<char *, Song, compare> *_songs, std::map<char *, Playlist, compare>  *_playlists){
     songs = _songs;
