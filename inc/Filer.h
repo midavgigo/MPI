@@ -13,15 +13,16 @@
 
 class Filer{
 private:
-    std::map<char *, Song, compare> *songs;
-    std::map<char *, Playlist, compare> *playlists;
+    std::map<char *, Song, compare_str> *songs;
+    std::map<char *, Playlist, compare_str> *playlists;
+    Playlist makePlaylistFromFile(std::string path);
 protected:
-    Filer(std::map<char *, Song, compare> *_songs, std::map<char *, Playlist, compare>  *_playlists);
+    Filer(std::map<char *, Song, compare_str> *_songs, std::map<char *, Playlist, compare_str>  *_playlists);
     void readCollection();
-    void writePlaylist();
-    void scanSong();
-    void delPlaylist();
-    void delSong();
+    void writePlaylist(Playlist *pl);
+    void copySongFrom(std::string path);
+    void delPlaylist(char *name);
+    void delSong(char *name);
     friend class Container;
 };
 
