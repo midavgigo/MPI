@@ -10,19 +10,21 @@
 #include <filesystem>
 #include <map>
 #include "compare.h"
+#define SONG_MAP std::map<std::string, Song>
+#define PLAYLIST_MAP std::map<std::string, Playlist>
 
 class Filer{
 private:
-    std::map<char *, Song, compare_str> *songs;
-    std::map<char *, Playlist, compare_str> *playlists;
-    Playlist makePlaylistFromFile(std::string path);
+    SONG_MAP *songs;
+    PLAYLIST_MAP *playlists;
 protected:
-    Filer(std::map<char *, Song, compare_str> *_songs, std::map<char *, Playlist, compare_str>  *_playlists);
+    Filer(SONG_MAP *_songs, PLAYLIST_MAP *_playlists);
     void readCollection();
-    void writePlaylist(Playlist *pl);
-    void copySongFrom(std::string path);
+    void writePlaylist(Playlist pl);
+    void copyFileFrom(std::string path, std::string dest, std::string extension);
     void delPlaylist(char *name);
     void delSong(char *name);
+    Playlist makePlaylistFromFile(std::string path);
     friend class Container;
 };
 
