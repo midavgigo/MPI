@@ -9,7 +9,6 @@
 #include <cstring>
 #include <filesystem>
 #include <map>
-#include "compare.h"
 #define SONG_MAP std::map<std::string, Song>
 #define PLAYLIST_MAP std::map<std::string, Playlist>
 
@@ -21,11 +20,9 @@ protected:
     Filer(SONG_MAP *_songs, PLAYLIST_MAP *_playlists);
     void readCollection();
     void writePlaylist(Playlist pl);
-    void copyFileFrom(std::string path, std::string dest, std::string extension);
     void delPlaylist(char *name);
-    void delSong(char *name);
     Playlist makePlaylistFromFile(std::string path);
-    friend class Container;
+    friend class MPI;
 };
 
 #endif

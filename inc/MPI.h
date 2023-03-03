@@ -3,24 +3,28 @@
 #include <Song.h>
 #include <Playlist.h>
 #include <map>
-#include "compare.h"
 #include "Filer.h"
 #include <cstring>
+#include <Player.h>
 
-class Container{
+class MPI{
 private:
     SONG_MAP songs;
     PLAYLIST_MAP playlists;
     Filer filer = Filer(&songs, &playlists);
+    Player pl;
 public:
-    Container(){}
-    void editPlaylist(Playlist pl);
+    MPI();
+    void editPlaylist(Playlist plst);
     SONG_MAP getSongsCollection();
     PLAYLIST_MAP getPlaylistsCollection();
-    void delSong(char *name);
-    void delPlaylist(char *name);
-    void scanSong(std::string path);
-    void scanPlaylist(std::string path);
+    bool delPlaylist(char *name);
+    void setPlaylistToPlayer(Playlist *plst);
+    void pausePlayer();
+    void playPlayer();
+    bool delSong(Playlist *plst, Song sng);
+    bool delSong(Playlist *plst, char *name);
+    ~MPI();
 };
 
 #endif

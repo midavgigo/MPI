@@ -90,23 +90,17 @@ void Filer::writePlaylist(Playlist pl){
     std::ofstream file(res);
     if (!file){
         std::cout<<"Can't make file "<<"files/playlists/"<<pl.getName()<<".pwf"<<" for reading\n";
+        return;
     }
-    char* first =(char *) pl.getNow().getName();
+    char first[255];
+    strcpy(first, pl.getNow().getName());
     file<<pl.getNow().getName()<<"\n";
     pl.Next();
     while(strcmp(pl.getNow().getName(),first) != 0){
         file<<pl.getNow().getName()<<"\n";
+        pl.Next();
     }
     file.close();
-}
-
-void Filer::copyFileFrom(std::string path, std::string dest, std::string extension){
-    for(const auto & entry : std::filesystem::directory_iterator(path)){
-        if(entry.path().extension().string() != extension){
-            continue;
-        }
-        std::filesystem::copy(entry.path(), dest+"/"+entry.path().filename().string());
-    }
 }
 
 void delFile(char *path){
@@ -121,13 +115,6 @@ void Filer::delPlaylist(char *name){
     char res[255] = "files/playlists/";
     strcat(res, name);
     strcat(res, ".pwf");
-    delFile(res);
-}
-
-void Filer::delSong(char *name){
-    char res[255] = "files/songs/";
-    strcat(res, name);
-    strcat(res, ".swf");
     delFile(res);
 }
 
