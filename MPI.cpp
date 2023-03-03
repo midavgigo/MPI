@@ -7,6 +7,7 @@ MPI::~MPI(){
 }
 
 void MPI::editPlaylist(Playlist plst){
+    playlists[plst.getName()] = plst;
     filer.writePlaylist(plst);
 }
 
