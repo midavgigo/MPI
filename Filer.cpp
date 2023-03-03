@@ -1,14 +1,10 @@
 #include "Filer.h"
-void check_dir(char *dir){
-    DWORD ftyp = GetFileAttributesA(dir);
-    if(!(ftyp&FILE_ATTRIBUTE_DIRECTORY)){
-        if(CreateDirectoryA(dir, NULL)){
-            std::cout<<dir<<" directory created\n";
-        }else{
-            std::cout<<"Error in creating "<<dir<<" directory\n";
-        }
+void check_dir(std::string dir){
+    DWORD ftyp = GetFileAttributesA(dir.c_str());
+    if(CreateDirectoryA(dir.c_str(), NULL)){
+        std::cout<<dir<<" directory created\n";
     }else{
-        std::cout<<dir<<" directory already exist\n";
+        std::cout<<"Error in creating "<<dir<<" directory\n";
     }
 }
 
@@ -119,12 +115,12 @@ void Filer::delPlaylist(char *name){
 }
 
 Filer::Filer(SONG_MAP *_songs, PLAYLIST_MAP  *_playlists): songs(_songs), playlists(_playlists){
-    char *work = "files";
-    char *pl = "files/playlists";
-    char *sngs = "files/songs";
+    std::string work = "files";
+    std::string pls = "files\\playlists";
+    std::string sng = "files\\songs";
     check_dir(work);
-    check_dir(pl);
-    check_dir(sngs);
+    check_dir(pls);
+    check_dir(sng);
 
     readCollection();
 }
